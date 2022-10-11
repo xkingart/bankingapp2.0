@@ -1,0 +1,66 @@
+version: "2.4"
+networks:
+  app-tier:
+    driver: bridge
+services:
+    front:
+        container_name: xking-banking-front
+        build: ./banking-front/
+        command: npm start
+        volumes:
+            - ./banking-front/public:/xking-banking-front/public
+            - ./banking-front/src:/xking-banking-front/src
+        environment:
+            - REACT_APP_API=http://localhost:3001
+        ports:
+            - 3000:3000
+        networks:
+            - app-tier
+    api:
+        container_name: xking-banking-api
+        build: ./banking-api/
+        command: node index.js
+        volumes:
+            - ./banking-api/index.js:/xking-banking-api/index.js
+            - ./banking-api/src:/xking-banking-api/src
+        ports:
+            - 3001:3001
+        depends_on:
+            - mongo
+        networks:
+            - app-tier
+        links:
+            - mongo:xking-banking-mongo
+    mongo:
+        container_name: xking-banking-mongo
+        image: mongo:4.0.26
+        restart: always
+        command: mongod --port 3002
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: root
+            MONGO_INITDB_DATABASE: xking-banking-db
+            TZ: America/Mexico_City
+        ports:
+            - 3002:3002
+        networks:
+            - app-tier
+    mongo-express:
+        container_name: xking-banking-mongoexpress
+        image: mongo-express
+        restart: always
+        ports:
+            - 8081:8081
+        environment:
+            ME_CONFIG_MONGODB_ADMINUSERNAME: root
+            ME_CONFIG_MONGODB_ADMINPASSWORD: root
+            ME_CONFIG_MONGODB_PORT: 3002
+            ME_CONFIG_MONGODB_SERVER: xking-banking-mongo
+            TZ: America/Mexico_City
+        depends_on:
+            - mongo
+        networks:
+            - app-tier
+        links:
+            - mongo:xking-banking-mongo
+    
