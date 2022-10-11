@@ -45,6 +45,8 @@ services:
             - 3002:3002
         networks:
             - app-tier
+        volumes:
+            - mongodata:/data/db
     mongo-express:
         container_name: xking-banking-mongoexpress
         image: mongo-express
