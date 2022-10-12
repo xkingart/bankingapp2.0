@@ -65,4 +65,7 @@ services:
             - app-tier
         links:
             - mongo:xking-banking-mongo
+volumes:
+  mongodata:
+    
     
