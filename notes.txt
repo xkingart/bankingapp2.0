@@ -1,0 +1,2 @@
+turn on docker
+docker-compose up --build
